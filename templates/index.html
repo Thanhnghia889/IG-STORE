@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IG Store - Hệ Thống Tài Khoản Instagram Auto</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">IG<span>Store</span></div>
+            <ul class="nav-links">
+                <li><a href="#">Trang Chủ</a></li>
+                <li><a href="#products">Sản Phẩm</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="#" style="color: #E1306C; font-weight: bold;">Chào, {{ current_user.username }}</a></li>
+                    <li><a href="#">Số dư: <span style="color: #28a745;">{{ "{:,}".format(current_user.balance) }}đ</span></a></li>
+                    {% if current_user.role == 'admin' %}
+                        <li><a href="/admin/dashboard" style="color: blue;">Quản trị</a></li>
+                    {% endif %}
+                    <li><a href="/logout" class="btn-login" style="background: #666;">Đăng xuất</a></li>
+                {% else %}
+                    <li><a href="javascript:void(0)" id="openAuth" class="btn-login">Đăng Nhập</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Hệ Thống Tài Khoản Instagram</h1>
+            <p>Uy tín - Chất lượng - Giao hàng ngay lập tức</p>
+            <a href="#products" class="cta-button">Mua Ngay</a>
+        </div>
+    </section>
+
+    <section id="products" class="products">
+        <h2 class="section-title">Kho Tài Khoản Instagram</h2>
+        <div class="product-grid">
+            <div class="card">
+                <div class="card-tag">Bán Chạy</div>
+                <i class="fab fa-instagram icon"></i>
+                <h3>IG Clone New</h3>
+                <p class="desc">Acc mới tạo, định dạng User|Pass|Mail.</p>
+                <div class="price">2,000đ</div>
+                <button class="buy-btn">Mua Ngay</button>
+            </div>
+            <div class="card">
+                <div class="card-tag gold">Cổ (2015)</div>
+                <i class="fab fa-instagram icon"></i>
+                <h3>IG Aged Premium</h3>
+                <p class="desc">Acc cổ 5-10 năm, độ tin cậy cực cao.</p>
+                <div class="price">45,000đ</div>
+                <button class="buy-btn">Mua Ngay</button>
+            </div>
+            <div class="card">
+                <i class="fab fa-instagram icon"></i>
+                <h3>IG 10k Follow</h3>
+                <p class="desc">Sẵn lượng tương tác khủng cho bán hàng.</p>
+                <div class="price">450,000đ</div>
+                <button class="buy-btn">Mua Ngay</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="buyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('buyModal')">&times;</span>
+            <h2 id="modalTitle">Xác nhận mua</h2>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Số lượng:</label>
+                    <input type="number" id="buyQuantity" value="1" min="1">
+                </div>
+                <div class="price-summary">
+                    <p>Đơn giá: <span id="unitPrice">0</span>đ</p>
+                    <p><strong>Tổng tiền: <span id="totalPrice">0</span>đ</strong></p>
+                </div>
+                <button class="confirm-btn" onclick="alert('Đang xử lý đơn hàng...')">Thanh Toán</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal">
+            <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="openTab(event, 'login-form')">Đăng Nhập</button>
+                <button class="tab-btn" onclick="openTab(event, 'register-form')">Đăng Ký</button>
+            </div>
+
+            <div id="login-form" class="auth-tab-content active">
+                <form action="/login" method="POST">
+                    <input type="text" name="username" placeholder="Tên đăng nhập" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" id="loginPass" placeholder="Mật khẩu" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPass', this)"></i>
+                    </div>
+                    <button type="submit" class="confirm-btn">Đăng Nhập</button>
+                </form>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" style="color: #666; font-size: 0.9rem;">Quên mật khẩu?</a>
+                </p>
+            </div>
+
+            <div id="register-form" class="auth-tab-content">
+                <form action="/register" method="POST">
+                    <input type="text" name="username" placeholder="Tên đăng nhập" required>
+                    <input type="email" name="email" placeholder="Email liên hệ" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" id="regPass" placeholder="Mật khẩu" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('regPass', this)"></i>
+                    </div>
+                    <button type="submit" class="confirm-btn gold">Đăng Ký Ngay</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 IG Store - Hệ Thống Bán Acc Tự Động</p>
+    </footer>
+
+    <script>
+        const buyModal = document.getElementById("buyModal");
+        const authModal = document.getElementById("authModal");
+        const qtyInput = document.getElementById("buyQuantity");
+        let currentPrice = 0;
+
+        // Mở Login
+        document.getElementById("openAuth").onclick = () => authModal.style.display = "block";
+
+        // Xử lý nút Mua
+        document.querySelectorAll('.buy-btn').forEach(btn => {
+            btn.onclick = function() {
+                const card = this.parentElement;
+                currentPrice = parseInt(card.querySelector('.price').innerText.replace(/,/g, '').replace('đ', ''));
+                document.getElementById("modalTitle").innerText = "Mua: " + card.querySelector('h3').innerText;
+                document.getElementById("unitPrice").innerText = currentPrice.toLocaleString();
+                qtyInput.value = 1;
+                updateTotal();
+                buyModal.style.display = "block";
+            };
+        });
+
+        // Đóng Modal
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        window.onclick = (e) => {
+            if (e.target == buyModal) closeModal('buyModal');
+            if (e.target == authModal) closeModal('authModal');
+        };
+
+        // Tính tiền
+        qtyInput.oninput = updateTotal;
+        function updateTotal() {
+            document.getElementById("totalPrice").innerText = (qtyInput.value * currentPrice).toLocaleString();
+        }
+
+        // Hiện/Ẩn Pass
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+
+        // Chuyển Tab Login/Reg
+        function openTab(evt, tabName) {
+            const contents = document.getElementsByClassName("auth-tab-content");
+            for (let c of contents) c.classList.remove("active");
+            const tabs = document.getElementsByClassName("tab-btn");
+            for (let t of tabs) t.classList.remove("active");
+            document.getElementById(tabName).classList.add("active");
+            if (evt.currentTarget.className.includes("tab-btn")) evt.currentTarget.classList.add("active");
+        }
+
+        function handleAuth(e, msg) { e.preventDefault(); alert(msg + " thành công!"); closeModal('authModal'); }
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Nạp Tiền - IG Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="background: #f4f6f8;">
+    <div style="max-width: 800px; margin: 50px auto; padding: 20px;">
+        <h2 style="text-align: center; margin-bottom: 30px;">Nạp Tiền Vào Tài Khoản</h2>
+        
+        <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; text-align: center;">
+                <div style="border: 2px dashed #E1306C; padding: 20px; border-radius: 10px; min-width: 250px;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Logo_MB_Bank.png" alt="MBBank" style="height: 40px;">
+                    <p style="margin-top: 10px;">Số tài khoản: <strong>0987654321</strong></p>
+                    <p>Chủ TK: <strong>NGUYEN VAN A</strong></p>
+                    <p>Nội dung chuyển khoản:</p>
+                    <h3 style="color: #E1306C; background: #fff0f5; padding: 10px; border-radius: 5px;">
+                        NAP {{ current_user.username }}
+                    </h3>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; background: #fff9db; padding: 15px; border-radius: 8px;">
+                <p><strong>Lưu ý:</strong> Sau khi chuyển khoản, vui lòng đợi 5-10 phút để Admin kiểm tra và cộng tiền. Nếu quá lâu vui lòng nhắn tin hỗ trợ.</p>
+            </div>
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="/" style="text-decoration: none; color: #666;"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

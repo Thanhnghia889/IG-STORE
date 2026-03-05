@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: #333; color: white; }
+        .input-money { padding: 8px; width: 100px; border-radius: 5px; border: 1px solid #ccc; }
+        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Quản lý Số Dư Người Dùng</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên User</th>
+                    <th>Số dư hiện tại</th>
+                    <th>Cộng tiền</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ "{:,}".format(user.balance) }}đ</td>
+                    <td>
+                        <form action="/admin/add-money" method="POST" style="display: flex; gap: 10px;">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <input type="number" name="amount" class="input-money" placeholder="Số tiền" required>
+                            <button type="submit" class="btn-add">Cộng tiền</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{{ url_for('admin.toggle_ban', user_id=user.id) }}" method="POST" style="display:inline;">
+                            {% if user.is_active_account %}
+                                <button type="submit" style="background: #ff9800; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
+                                    <i class="fas fa-ban"></i> Khóa
+                                </button>
+                            {% else %}
+                                <button type="submit" style="background: #2196F3; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
+                                    <i class="fas fa-check"></i> Mở khóa
+                                </button>
+                            {% endif %}
+                        </form>
+                        
+                        <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Xóa vĩnh viễn?');">
+                            <button type="submit" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
