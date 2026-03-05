@@ -17,6 +17,14 @@ def create_app():
     # 2. Kết nối các thư viện với app
     db.init_app(app)
     login_manager.init_app(app)
+    # --- THÊM ĐOẠN NÀY ĐỂ ÉP GHI FILE NGAY ---
+    with app.app_context():
+        # Thiết lập chế độ DELETE để SQLite ghi trực tiếp vào file .db chính
+        from sqlalchemy import text
+        try:
+            db.session.execute(text('PRAGMA journal_mode=DELETE;'))
+        except Exception:
+            pass
     login_manager.login_view = 'auth.login' 
 
     # 3. Đăng ký các Blueprint từ thư mục routes
