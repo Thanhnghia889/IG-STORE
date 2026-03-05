@@ -3,7 +3,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
-# Khởi tạo các đối tượng dùng chung
+# Khởi tạo db và login_manager tại đây để các file khác có thể import
 db = SQLAlchemy()
 login_manager = LoginManager()
 
@@ -17,20 +17,21 @@ def create_app():
     # 2. Kết nối các thư viện với app
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login' # Trỏ về trang đăng nhập của Blueprint auth
+    login_manager.login_view = 'auth.login' 
 
-    # 3. Đăng ký các Blueprint (Kết nối các file routes)
-    from auth import auth_bp
-    from admin import admin_bp
+    # 3. Đăng ký các Blueprint từ thư mục routes
+    # Lưu ý: dùng dấu chấm (routes.auth) để chỉ đường dẫn
+    from routes.auth import auth_bp
+    from routes.admin import admin_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
 
-    # 4. Tự động tạo bảng Database và tài khoản Admin mẫu
+    # 4. Tự động tạo bảng Database SQLite
     with app.app_context():
         import models 
         try:
             db.create_all()
-            # Kiểm tra nếu chưa có Admin thì tạo một cái để test
+            # Tạo tài khoản Admin mặc định nếu chưa có
             admin_check = models.User.query.filter_by(role='admin').first()
             if not admin_check:
                 from werkzeug.security import generate_password_hash
@@ -42,18 +43,17 @@ def create_app():
                 )
                 db.session.add(new_admin)
                 db.session.commit()
-                print(">>> Đã tạo tài khoản Admin mặc định: admin / admin123")
+                print(">>> Đã tạo tài khoản Admin: admin / admin123")
         except Exception as e:
-            print(f">>> Lỗi khi khởi tạo Database: {e}")
+            print(f">>> Lỗi khi khởi tạo DB: {e}")
 
-    # 5. Route trang chủ (Tránh lỗi 404 khi vào domain chính)
     @app.route('/')
     def index():
         return render_template('index.html')
 
     return app
 
-# Đối tượng app dành cho Gunicorn (Render sẽ gọi cái này)
+# Đối tượng app dành cho Gunicorn
 app = create_app()
 
 @login_manager.user_loader
