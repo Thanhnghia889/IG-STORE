@@ -2,7 +2,7 @@ from flask import Blueprint, request, redirect, url_for, render_template, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user
 from app import db 
-from models import User 
+from models import User
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -39,7 +39,7 @@ def register():
     new_user = User(username=username, email=email, password=hashed_pw)
     
     db.session.add(new_user)
-    db.session.commit()
+    db.session.commit() # Cập nhật file database.db lập tức
     login_user(new_user)
     return redirect(url_for('index'))
 

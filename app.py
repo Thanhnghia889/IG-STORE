@@ -2,8 +2,9 @@ import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from sqlalchemy import text # Dùng để thực thi lệnh cấu hình SQLite
 
-# Khởi tạo db và login_manager tại đây để các file khác có thể import
+# Khởi tạo db và login_manager tại đây
 db = SQLAlchemy()
 login_manager = LoginManager()
 
@@ -17,43 +18,41 @@ def create_app():
     # 2. Kết nối các thư viện với app
     db.init_app(app)
     login_manager.init_app(app)
-    # --- THÊM ĐOẠN NÀY ĐỂ ÉP GHI FILE NGAY ---
+    login_manager.login_view = 'auth.login'
+
+    # 3. Cấu hình SQLite và Tự động tạo bảng Database
     with app.app_context():
-        # Thiết lập chế độ DELETE để SQLite ghi trực tiếp vào file .db chính
-        from sqlalchemy import text
+        # Ép SQLite ghi dữ liệu ngay lập tức vào file .db (tắt chế độ ghi tạm WAL)
         try:
             db.session.execute(text('PRAGMA journal_mode=DELETE;'))
+            db.session.execute(text('PRAGMA synchronous=FULL;'))
         except Exception:
             pass
-    login_manager.login_view = 'auth.login' 
 
-    # 3. Đăng ký các Blueprint từ thư mục routes
-    # Lưu ý: dùng dấu chấm (routes.auth) để chỉ đường dẫn
-    from routes.auth import auth_bp
-    from routes.admin import admin_bp
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(admin_bp)
-
-    # 4. Tự động tạo bảng Database SQLite
-    with app.app_context():
-        import models 
+        import models  # Đảm bảo Flask nhận diện được các Class trong models.py
         try:
             db.create_all()
             # Tạo tài khoản Admin mặc định nếu chưa có
             admin_check = models.User.query.filter_by(role='admin').first()
             if not admin_check:
                 from werkzeug.security import generate_password_hash
-                new_admin = models.User(
-                    username='admin',
-                    email='admin@gmail.com',
+                admin = models.User(
+                    username='admin', 
+                    email='admin@gmail.com', 
                     password=generate_password_hash('admin123'),
                     role='admin'
                 )
-                db.session.add(new_admin)
+                db.session.add(admin)
                 db.session.commit()
-                print(">>> Đã tạo tài khoản Admin: admin / admin123")
+            print(">>> [HỆ THỐNG] Đã khởi tạo SQLite thành công!")
         except Exception as e:
-            print(f">>> Lỗi khi khởi tạo DB: {e}")
+            print(f">>> [LỖI] Không thể tạo bảng: {e}")
+
+    # 4. Đăng ký các Blueprint từ thư mục routes
+    from routes.auth import auth_bp
+    from routes.admin import admin_bp
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
 
     @app.route('/')
     def index():
@@ -61,7 +60,7 @@ def create_app():
 
     return app
 
-# Đối tượng app dành cho Gunicorn
+# Đối tượng app dành cho Gunicorn (Render)
 app = create_app()
 
 @login_manager.user_loader

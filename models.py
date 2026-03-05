@@ -1,7 +1,6 @@
 from flask_login import UserMixin
 from datetime import datetime
-# Import db từ app.py để dùng chung một kết nối duy nhất
-from app import db 
+from app import db
 
 class User(UserMixin, db.Model):
     __tablename__ = 'Users'
@@ -10,17 +9,16 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     balance = db.Column(db.BigInteger, default=0)
-    is_active_account = db.Column(db.Boolean, default=True) 
-    role = db.Column(db.String(10), default='user') 
+    is_active_account = db.Column(db.Boolean, default=True)
+    role = db.Column(db.String(10), default='user')
 
 class Transaction(db.Model):
     __tablename__ = 'Transactions'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
     amount = db.Column(db.BigInteger, nullable=False)
-    content = db.Column(db.String(100)) 
-    status = db.Column(db.String(20), default='pending') 
+    content = db.Column(db.String(100))
+    status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Thiết lập mối quan hệ
     user = db.relationship('User', backref=db.backref('transactions', lazy=True))

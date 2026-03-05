@@ -5,7 +5,6 @@ from models import User
 
 admin_bp = Blueprint('admin', __name__)
 
-# Hàm kiểm tra quyền admin
 def is_admin():
     return current_user.is_authenticated and current_user.role == 'admin'
 
@@ -37,7 +36,7 @@ def add_money():
     
     if user:
         user.balance += amount
-        db.session.commit()
+        db.session.commit() # Ghi dữ liệu vào file ngay lập tức
         flash(f"Đã cộng {amount:,}đ cho tài khoản {user.username}", "success")
     else:
         flash("Không tìm thấy người dùng!", "danger")
@@ -51,8 +50,6 @@ def toggle_ban(user_id):
         return "Không có quyền!", 403
         
     user = User.query.get_or_404(user_id)
-    
-    # Không cho phép admin tự khóa chính mình
     if user.id == current_user.id:
         flash("Bạn không thể tự khóa tài khoản của chính mình!", "danger")
         return redirect(url_for('admin.dashboard'))
