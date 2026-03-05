@@ -9,6 +9,9 @@ def create_app():
 
     # Khởi tạo Database
     db.init_app(app)
+    with app.app_context():
+        db.create_all()  # Nó sẽ tự kiểm tra, nếu chưa có bảng thì nó tự tạo
+    return app
 
     # Cấu hình Login
     login_manager = LoginManager()
