@@ -1,2 +1,5 @@
-pip install gunicorn
-pip freeze > requirements.txt
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+flask-login
+gunicorn
+(và các thư viện khác nếu có...)
